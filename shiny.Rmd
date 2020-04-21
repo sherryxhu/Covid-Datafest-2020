@@ -1,0 +1,45 @@
+---
+title: "Datafest2020"
+author: "Daniel Zhou"
+date: "4/20/2020"
+output: pdf_document
+---
+
+
+# UI.R
+```{r}
+library(shinydashboard)
+
+dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody()
+)
+```
+
+# app.R
+```{r}
+library(shiny)
+library(shinydashboard)
+
+ui <- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(),
+  dashboardBody()
+)
+
+server <- function(input, output) { }
+
+shinyApp(ui, server)
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
