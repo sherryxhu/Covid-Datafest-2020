@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import plotly.graph_objects as go
 
 import pandas as pd
 
@@ -44,11 +45,13 @@ layout = html.Div([
 
 
 @app.callback(
-    Output('specie-dropdown', 'options'),
+    [Output('specie-dropdown', 'options'),
+     Output('specie-dropdown', 'value')],
     [Input('city-dropdown', 'value')])
 def set_cities_options(city):
-    species = sorted(list(df['Specie'].unique()) + ['AQI'])
-    return [{'label': i, 'value': i} for i in species]
+    dff = df[df['City'] == city]
+    species = sorted(list(dff['Specie'].unique()) + ['AQI'])
+    return ([{'label': i, 'value': i} for i in species], None)
 
 
 @app.callback(
@@ -61,36 +64,63 @@ def update_graph(city, specie):
         for s in specie:
             if s != "AQI":
                 dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
-                data.append(dict(
+                data.append(go.Scatter(
                     x=dff['Date'],
                     y=dff['median'],
                     name=s,
                     mode='lines+markers',
                     marker={
-                        'size': 15,
+                        'size': 7,
                         'opacity': 0.5,
                         'line': {'width': 0.5, 'color': 'white'}
                     }
                 ))
             else:
                 dff = df[(df['City'] == city)].drop_duplicates('AQI').sort_values(by="Date")
-                data.append(dict(
+                data.append(go.Scatter(
                     x=dff['Date'],
                     y=dff['median'],
                     name=s,
                     mode='lines+markers',
                     marker={
-                        'size': 15,
+                        'size': 7,
                         'opacity': 0.5,
                         'line': {'width': 0.5, 'color': 'white'}
                     }
                 ))
+
+    def update_title(city, specie):
+        if city and specie:
+            return "{} {}".format(city, ", ".join(specie))
+        return ""
+
     return {
         'data': data,
         'layout': dict(
-            title="{} {}".format(city, specie),
-            margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
-            hovermode='closest'
-        )
+            title=update_title(city, specie),
+            margin={'l': 40, 'b': 40, 't': 100, 'r': 40},
+            xaxis=dict(
+                autorange=True,
+                rangeselector=dict(
+                    buttons=list([
+                        dict(count=1,
+                             label='1m',
+                             step='month',
+                             stepmode='backward'),
+                        dict(count=7,
+                             label='7d',
+                             step='day',
+                             stepmode='backward'),
+                        dict(count=1,
+                             label='1d',
+                             step='day',
+                             stepmode='backward'),
+                        dict(step='all')
+                    ])
+                ),
+                type='date'
+            )
+        ),
+
     }
 
