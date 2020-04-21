@@ -14,7 +14,7 @@ data_file = "../US_AQI.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities = sorted(df['City'].unique())
-species = sorted(list(df['Specie'].unique())+['AQI'])
+species = sorted(list(df['Specie'].unique()) + ['AQI'])
 
 # df = pd.read_csv('https://plotly.github.io/datasets/country_indicators.csv')
 
@@ -36,23 +36,25 @@ app.layout = html.Div([
                 multi=True
             ),
         ],
-        style={'width': '48%', 'display': 'inline-block'}),
+            style={'width': '48%', 'display': 'inline-block'}),
 
         # html.Div([
-            # dcc.Dropdown(
-            #     id='yaxis-column',
-            #     options=[{'label': i, 'value': i} for i in available_indicators],
-            #     value='Life expectancy at birth, total (years)'
-            # ),
-            # dcc.RadioItems(
-            #     id='yaxis-type',
-            #     options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-            #     value='Linear',
-            #     labelStyle={'display': 'inline-block'}
-            # )
+        # dcc.Dropdown(
+        #     id='yaxis-column',
+        #     options=[{'label': i, 'value': i} for i in available_indicators],
+        #     value='Life expectancy at birth, total (years)'
+        # ),
+        # dcc.RadioItems(
+        #     id='yaxis-type',
+        #     options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
+        #     value='Linear',
+        #     labelStyle={'display': 'inline-block'}
+        # )
         # ],style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
     ]),
 
+    html.Br(),
+    html.Br(),
     dcc.Graph(id='indicator-graphic'),
 
     # dcc.Slider(
@@ -65,19 +67,21 @@ app.layout = html.Div([
     # )
 ])
 
+
 @app.callback(
     Output('specie-dropdown', 'options'),
     [Input('city-dropdown', 'value')])
 def set_cities_options(city):
     dff = df[(df['City'] == city)]
-    species = sorted(list(df['Specie'].unique())+['AQI'])
+    species = sorted(list(df['Specie'].unique()) + ['AQI'])
     return [{'label': i, 'value': i} for i in species]
+
 
 @app.callback(
     Output('indicator-graphic', 'figure'),
     [Input('city-dropdown', 'value'),
      Input('specie-dropdown', 'value')])
-def update_graph(city,specie):
+def update_graph(city, specie):
     data = []
     if specie:
         for s in specie:
@@ -95,7 +99,7 @@ def update_graph(city,specie):
                     }
                 ))
             else:
-                dff = df.drop_duplicates('AQI').sort_values(by="Date")
+                dff = df[(df['City'] == city)].drop_duplicates('AQI').sort_values(by="Date")
                 data.append(dict(
                     x=dff['Date'],
                     y=dff['median'],
@@ -110,6 +114,7 @@ def update_graph(city,specie):
     return {
         'data': data,
         'layout': dict(
+            title="{} {}".format(city, specie),
             # xaxis={
             #     'title': xaxis_column_name,
             #     'type': 'linear' if xaxis_type == 'Linear' else 'log'
