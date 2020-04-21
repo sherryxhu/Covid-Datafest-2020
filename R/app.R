@@ -1,4 +1,5 @@
 library(shinydashboard)
+library(ggplot2)
 
 ui <- dashboardPage(
   dashboardHeader(title = "Basic dashboard"),
@@ -15,23 +16,18 @@ ui <- dashboardPage(
       # First tab content
       tabItem(tabName = "dashboard",
               fluidRow(
-                box(plotOutput("plot1", height = 250)),
-                
-                box(
-                  title = "Controls",
-                  sliderInput("slider", "Number of observations:", 1, 100, 50)
-                )
+                box(plotOutput("plot1")),
               ),
               fluidRow(
                 box(
                   title = "Input",
                   selectInput("city",
                               label = h3("City"),
-                              choices=list("Tokyo", "NYC")
+                              choices=list("Beijing", "NYC")
                   ),
-                  selectInput("particle",
-                              label = h3("Particle"),
-                              choices=list("O3", "PM10")
+                  selectInput("specie",
+                              label = h3("specie"),
+                              choices=list("o3", "pm10")
                   )
                 )
               )
@@ -45,13 +41,17 @@ ui <- dashboardPage(
   )
 )
 
+df = read.csv(file = '../waqi-covid19-airqualitydata-2020.csv')
+
 server <- function(input, output) {
-  set.seed(122)
-  histdata <- rnorm(500)
   
   output$plot1 <- renderPlot({
-    data <- histdata[seq_len(input$slider)]
-    hist(data)
+    df_2 = df %>% 
+      filter((City == input$city) & (Specie == input$specie)) %>%
+      arrange(Date)
+    ggplot(data=df_2, aes(x=Date, y=median, group=1)) +
+      geom_line()+
+      geom_point()
   })
 }
 
