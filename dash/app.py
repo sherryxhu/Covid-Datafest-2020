@@ -9,11 +9,12 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-data_file = "../waqi-covid19-airqualitydata-2020.csv"
+# data_file = "../waqi-covid19-airqualitydata-2020.csv"
+data_file = "../US_AQI.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities = sorted(df['City'].unique())
-species = sorted(df['Specie'].unique())
+species = sorted(list(df['Specie'].unique())+['AQI'])
 
 # df = pd.read_csv('https://plotly.github.io/datasets/country_indicators.csv')
 
@@ -69,7 +70,7 @@ app.layout = html.Div([
     [Input('city-dropdown', 'value')])
 def set_cities_options(city):
     dff = df[(df['City'] == city)]
-    species = sorted(dff['Specie'].unique())
+    species = sorted(list(df['Specie'].unique())+['AQI'])
     return [{'label': i, 'value': i} for i in species]
 
 @app.callback(
@@ -80,18 +81,32 @@ def update_graph(city,specie):
     data = []
     if specie:
         for s in specie:
-            dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
-            data.append(dict(
-                x=dff['Date'],
-                y=dff['median'],
-                name=s,
-                mode='lines+markers',
-                marker={
-                    'size': 15,
-                    'opacity': 0.5,
-                    'line': {'width': 0.5, 'color': 'white'}
-                }
-            ))
+            if s != "AQI":
+                dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
+                data.append(dict(
+                    x=dff['Date'],
+                    y=dff['median'],
+                    name=s,
+                    mode='lines+markers',
+                    marker={
+                        'size': 15,
+                        'opacity': 0.5,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    }
+                ))
+            else:
+                dff = df.drop_duplicates('AQI').sort_values(by="Date")
+                data.append(dict(
+                    x=dff['Date'],
+                    y=dff['median'],
+                    name=s,
+                    mode='lines+markers',
+                    marker={
+                        'size': 15,
+                        'opacity': 0.5,
+                        'line': {'width': 0.5, 'color': 'white'}
+                    }
+                ))
     return {
         'data': data,
         'layout': dict(
