@@ -20,15 +20,19 @@ species = sorted(list(df['Specie'].unique()) + ['AQI'])
 
 
 layout = html.Div([
+    html.H1("Title",style={'textAlign': 'center'}),
+    html.Br(),
+    html.P("Description here"),
     html.Div([
 
         html.Div([
-            html.H2(children='City'),
+            html.H3(children='City'),
             dcc.Dropdown(
                 id='city-dropdown',
                 options=[{'label': i, 'value': i} for i in cities],
             ),
-            html.H2(children='Specie'),
+            html.Br(),
+            html.H3(children='Specie'),
             dcc.Dropdown(
                 id='specie-dropdown',
                 options=[{'label': i, 'value': i} for i in species],
