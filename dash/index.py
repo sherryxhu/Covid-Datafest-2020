@@ -29,7 +29,7 @@ from app import app
 # it consists of a title, and a toggle, the latter is hidden on large screens
 sidebar_header = dbc.Row(
     [
-        dbc.Col(html.H2("Sidebar", className="display-4")),
+        dbc.Col(html.H2("Air Quality and Covid19 Analytics", className="display-10")),
         dbc.Col(
             [
                 html.Button(
@@ -72,10 +72,10 @@ sidebar = html.Div(
         html.Div(
             [
                 html.Hr(),
-                html.P(
-                    "Air Quality and Covid19 Analytics",
-                    className="lead",
-                ),
+                # html.P(
+                #     "Air Quality and Covid19 Analytics",
+                #     className="lead",
+                # ),
             ],
             id="blurb",
         ),
@@ -83,8 +83,8 @@ sidebar = html.Div(
         dbc.Collapse(
             dbc.Nav(
                 [
-                    dbc.NavLink("Page 1", href="/page-1", id="page-1-link"),
-                    dbc.NavLink("Page 2", href="/page-2", id="page-2-link"),
+                    dbc.NavLink("City Analysis", href="/city-analysis", id="page-1-link"),
+                    dbc.NavLink("Multiple City Analysis", href="/multiple-city-analysis", id="page-2-link"),
                     dbc.NavLink("Page 3", href="/page-3", id="page-3-link"),
                 ],
                 vertical=True,
@@ -116,9 +116,9 @@ def toggle_active_links(pathname):
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def render_page_content(pathname):
-    if pathname in ["/", "/page-1"]:
+    if pathname in ["/", "/city-analysis"]:
         return city_analysis.layout
-    elif pathname == "/page-2":
+    elif pathname == "/multiple-city-analysis":
         return multiple_city_analysis.layout
     elif pathname == "/page-3":
         return html.P("Oh cool, this is page 3!")
