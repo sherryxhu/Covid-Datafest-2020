@@ -22,7 +22,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 from pages import city_analysis
-
+from pages import multiple_city_analysis
 from app import app
 
 # we use the Row and Col components to construct the sidebar header
@@ -73,8 +73,7 @@ sidebar = html.Div(
             [
                 html.Hr(),
                 html.P(
-                    "A responsive sidebar layout with collapsible navigation "
-                    "links.",
+                    "Air Quality and Covid19 Analytics",
                     className="lead",
                 ),
             ],
@@ -120,7 +119,7 @@ def render_page_content(pathname):
     if pathname in ["/", "/page-1"]:
         return city_analysis.layout
     elif pathname == "/page-2":
-        return html.P("This is the content of page 2. Yay!")
+        return multiple_city_analysis.layout
     elif pathname == "/page-3":
         return html.P("Oh cool, this is page 3!")
     # If the user tries to reach a different page, return a 404 message

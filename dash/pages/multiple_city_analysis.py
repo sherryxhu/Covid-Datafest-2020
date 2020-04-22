@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 
 import pandas as pd
 
+
 # app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 from app import app
@@ -14,27 +15,28 @@ from app import app
 data_file = "../US_AQI.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
-cities = sorted(df['City'].unique())
-species = sorted(list(df['Specie'].unique()) + ['AQI'])
+cities_options = sorted(df['City'].unique())
+species_options = sorted(list(df['Specie'].unique()) + ['AQI'])
+
 
 layout = html.Div([
-    html.H1("City Analysis", style={'textAlign': 'center'}),
+    html.H1("Multiple City Analysis",style={'textAlign': 'center'}),
     html.Br(),
-    html.P("Examine different statistics for one city."),
+    html.P("Compare one statistic across several cities."),
     html.Div([
 
         html.Div([
-            html.H3(children='City'),
+            html.H3(children='Cities'),
             dcc.Dropdown(
-                id='city-dropdown',
-                options=[{'label': i, 'value': i} for i in cities],
+                id='multiple-city-dropdown',
+                options=[{'label': i, 'value': i} for i in cities_options],
+                multi=True
             ),
             html.Br(),
             html.H3(children='Specie'),
             dcc.Dropdown(
-                id='specie-dropdown',
-                options=[{'label': i, 'value': i} for i in species],
-                multi=True
+                id='multiple-specie-dropdown',
+                options=[{'label': i, 'value': i} for i in species_options],
             ),
         ],
             style={'width': '48%', 'display': 'inline-block'}),
@@ -42,34 +44,40 @@ layout = html.Div([
 
     html.Br(),
     html.Br(),
-    dcc.Graph(id='indicator-graphic'),
+    dcc.Graph(id='multiple-city-graphic'),
 ])
 
 
 @app.callback(
-    [Output('specie-dropdown', 'options'),
-     Output('specie-dropdown', 'value')],
-    [Input('city-dropdown', 'value')])
-def set_cities_options(city):
-    dff = df[df['City'] == city]
-    species = sorted(list(dff['Specie'].unique()) + ['AQI'])
-    return ([{'label': i, 'value': i} for i in species], None)
+    Output('multiple-specie-dropdown', 'options'),
+    [Input('multiple-city-dropdown', 'value')])
+def set_cities_options(cities):
+    output = list()
+    if cities:
+        for c in cities:
+            dff = df[df['City'] == c]
+            species = list(dff['Specie'].unique())
+            if len(output) == 0:
+                output = species
+            else:
+                output = list(set(output) & set(species))
+    return [{'label': i, 'value': i} for i in sorted(list(output)+['AQI'])]
 
 
 @app.callback(
-    Output('indicator-graphic', 'figure'),
-    [Input('city-dropdown', 'value'),
-     Input('specie-dropdown', 'value')])
-def update_graph(city, specie):
+    Output('multiple-city-graphic', 'figure'),
+    [Input('multiple-city-dropdown', 'value'),
+     Input('multiple-specie-dropdown', 'value')])
+def update_graph(cities, specie):
     data = []
-    if city and specie:
-        for s in specie:
-            if s != "AQI":
-                dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
+    if cities and specie:
+        for c in cities: # change this to cities
+            if specie != "AQI":
+                dff = df[(df['City'] == c) & (df['Specie'] == specie)].sort_values(by="Date")
                 data.append(go.Scatter(
                     x=dff['Date'],
                     y=dff['median'],
-                    name=s,
+                    name=c,
                     mode='lines+markers',
                     marker={
                         'size': 7,
@@ -78,11 +86,11 @@ def update_graph(city, specie):
                     }
                 ))
             else:
-                dff = df[(df['City'] == city)].drop_duplicates('Date').sort_values(by="Date")
+                dff = df[(df['City'] == c)].drop_duplicates('Date').sort_values(by="Date")
                 data.append(go.Scatter(
                     x=dff['Date'],
                     y=dff['AQI'],
-                    name=s,
+                    name=c,
                     mode='lines+markers',
                     marker={
                         'size': 7,
@@ -91,15 +99,15 @@ def update_graph(city, specie):
                     }
                 ))
 
-    def update_title(city, specie):
-        if city and specie:
-            return "{} {}".format(city, ", ".join(specie))
+    def update_title(cities, specie):
+        if cities and specie:
+            return "{} {}".format(specie, ", ".join(cities))
         return ""
 
     return {
         'data': data,
         'layout': dict(
-            title=update_title(city, specie),
+            title=update_title(cities, specie),
             margin={'l': 40, 'b': 40, 't': 100, 'r': 40},
             xaxis=dict(
                 autorange=True,
@@ -128,3 +136,4 @@ def update_graph(city, specie):
         ),
 
     }
+
