@@ -11,11 +11,12 @@ import pandas as pd
 from app import app
 
 # data_file = "../waqi-covid19-airqualitydata-2020.csv"
-data_file = "../US_AQI.csv"
+data_file = "../data/airqualitydata-2019-2020.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities = sorted(df['City'].unique())
-species = sorted(list(df['Specie'].unique()) + ['AQI'])
+# species = sorted(list(df['Specie'].unique()) + ['AQI'])
+species = sorted(list(df['Specie'].unique()))
 
 layout = html.Div([
     html.H1("City Analysis", style={'textAlign': 'center'}),
@@ -52,7 +53,8 @@ layout = html.Div([
     [Input('city-dropdown', 'value')])
 def set_cities_options(city):
     dff = df[df['City'] == city]
-    species = sorted(list(dff['Specie'].unique()) + ['AQI'])
+    # species = sorted(list(dff['Specie'].unique()) + ['AQI'])
+    species = sorted(list(dff['Specie'].unique()) )
     return ([{'label': i, 'value': i} for i in species], None)
 
 
