@@ -1,2 +1,3 @@
 /.ipynb_checkpoints
 /waqi-covid19-airqualitydata-2020.csv
+*.csv
