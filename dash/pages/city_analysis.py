@@ -11,11 +11,15 @@ import pandas as pd
 from app import app
 
 # data_file = "../waqi-covid19-airqualitydata-2020.csv"
-data_file = "../US_AQI.csv"
+data_file = "../data/airqualitydata-2019-2020.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities = sorted(df['City'].unique())
-species = sorted(list(df['Specie'].unique()) + ['AQI'])
+# species = sorted(list(df['Specie'].unique()) + ['AQI'])
+species = sorted(list(df['Specie'].unique()))
+
+changepoint_file = '../data/changepoints.csv'
+df_changepoint = pd.read_csv(changepoint_file)
 
 layout = html.Div([
     html.H1("City Analysis", style={'textAlign': 'center'}),
@@ -52,7 +56,8 @@ layout = html.Div([
     [Input('city-dropdown', 'value')])
 def set_cities_options(city):
     dff = df[df['City'] == city]
-    species = sorted(list(dff['Specie'].unique()) + ['AQI'])
+    # species = sorted(list(dff['Specie'].unique()) + ['AQI'])
+    species = sorted(list(dff['Specie'].unique()))
     return ([{'label': i, 'value': i} for i in species], None)
 
 
@@ -62,8 +67,13 @@ def set_cities_options(city):
      Input('specie-dropdown', 'value')])
 def update_graph(city, specie):
     data = []
+    changepoint_dates = []
     if city and specie:
         for s in specie:
+            changepoint_dates += list(
+                df_changepoint[(df_changepoint['City'] == city) & (df_changepoint['Specie'] == s)]['Date'].apply(
+                    str))
+
             if s != "AQI":
                 dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
                 data.append(go.Scatter(
@@ -96,11 +106,29 @@ def update_graph(city, specie):
             return "{} {}".format(city, ", ".join(specie))
         return ""
 
+    shapes = [{
+        'type': 'line',
+        # x-reference is assigned to the x-values
+        'xref': 'x',
+        # y-reference is assigned to the plot paper [0,1]
+        'yref': 'paper',
+        'x0': d,
+        'y0': 0,
+        'x1': d,
+        'y1': 1,
+        'opacity': 0.3,
+        'line': {
+            'color': 'dark green',
+            'width': 2,
+        },
+        'name': 'change point'
+    } for d in changepoint_dates]
     return {
         'data': data,
         'layout': dict(
             title=update_title(city, specie),
             margin={'l': 40, 'b': 40, 't': 100, 'r': 40},
+            shapes=shapes,
             xaxis=dict(
                 autorange=True,
                 rangeselector=dict(

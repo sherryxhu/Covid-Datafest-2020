@@ -11,12 +11,12 @@ import pandas as pd
 
 from app import app
 
-# data_file = "../waqi-covid19-airqualitydata-2020.csv"
-data_file = "../US_AQI.csv"
+data_file = "../data/airqualitydata-2019-2020.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities_options = sorted(df['City'].unique())
-species_options = sorted(list(df['Specie'].unique()) + ['AQI'])
+# species_options = sorted(list(df['Specie'].unique()) + ['AQI'])
+species_options = sorted(list(df['Specie'].unique()))
 
 
 layout = html.Div([
@@ -61,7 +61,8 @@ def set_cities_options(cities):
                 output = species
             else:
                 output = list(set(output) & set(species))
-    return [{'label': i, 'value': i} for i in sorted(list(output)+['AQI'])]
+    # return [{'label': i, 'value': i} for i in sorted(list(output)+['AQI'])]
+    return [{'label': i, 'value': i} for i in sorted(list(output))]
 
 
 @app.callback(
