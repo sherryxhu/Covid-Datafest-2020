@@ -10,8 +10,9 @@ from datetime import datetime
 # app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 from app import app
-df = pd.read_csv("../data/COVID-19-data-pop-lat-lng-changepoints.csv")
-df = df[df['Country']=="US"]
+
+df = pd.read_csv("../data/COVID-19-data-pop-lat-lng-changepoints-updated.csv")
+df = df[df['Country'] == "US"]
 df['text'] = df['City'] + '<br>Change Date for ' + df['Specie'] + ':<br>' + df['Date']
 # colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]
 fig = go.Figure()
@@ -20,37 +21,38 @@ current_date = datetime.strptime('2020-04-22', date_format)
 df['current_date'] = current_date
 df['Date'] = df['Date'].astype('datetime64[ns]')
 df['size'] = (df['current_date'] - df['Date']).astype('timedelta64[D]')
+colors = ['#ff00ff', '#00ff00', '#9900ff', '#0000ff', '#ff6933']
 
 species = df['Specie'].unique()
 for s in species:
-    dff = df[df['Specie']==s]
+    dff = df[df['Specie'] == s]
     fig.add_trace(go.Scattergeo(
-        locationmode = 'USA-states',
-        lon = dff['lng'],
-        lat = dff['lat'],
-        text = dff['text'],
-        marker = dict(
-            size = dff['size']*10,
+        locationmode='USA-states',
+        lon=dff['lng'],
+        lat=dff['lat'],
+        text=dff['text'],
+        marker=dict(
+            size=dff['size'] * 15,
             # color = colors[i],
             line_color='rgb(40,40,40)',
             line_width=0.5,
-            sizemode = 'area'
+            sizemode='area'
         ),
-        name = s))
+        name=s))
 
 fig.update_layout(
-        title_text='USA Changepoints',
-        showlegend = True,
-        geo = dict(
-            scope = 'usa',
-            landcolor = 'rgb(217, 217, 217)',
-        ),
-    )
+    title_text='USA Changepoints',
+    showlegend=True,
+    geo=dict(
+        scope='usa',
+        landcolor='rgb(217, 217, 217)',
+    ),
+)
 
 layout = html.Div([
     html.H1("Map Analysis", style={'textAlign': 'center'}),
     html.Br(),
-    html.P("Compare change dates and lockdown dates across the US and China."),
+    html.P("Compare point change dates across the US. A point change is defined as the time at which the typical pattern was broken. The larger the bubble, the earlier it changed."),
     dcc.Graph(id='map-graphic', figure=fig),
 ])
 

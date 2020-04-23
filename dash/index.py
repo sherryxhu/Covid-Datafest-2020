@@ -24,6 +24,7 @@ from dash.dependencies import Input, Output, State
 from pages import city_analysis
 from pages import multiple_city_analysis
 from pages import map_analysis
+from pages import changepoint_analysis
 from app import app
 
 # we use the Row and Col components to construct the sidebar header
@@ -87,6 +88,8 @@ sidebar = html.Div(
                     dbc.NavLink("City Analysis", href="/city-analysis", id="page-1-link"),
                     dbc.NavLink("Multiple City Analysis", href="/multiple-city-analysis", id="page-2-link"),
                     dbc.NavLink("Map Analysis", href="/map-analysis", id="page-3-link"),
+                    dbc.NavLink("Change Point Analysis", href="/changepoint-analysis", id="page-4-link"),
+
                 ],
                 vertical=True,
                 pills=True,
@@ -105,14 +108,14 @@ app.layout = html.Div([dcc.Location(id="url"), sidebar, content])
 # this callback uses the current pathname to set the active state of the
 # corresponding nav link to true, allowing users to tell see page they are on
 @app.callback(
-    [Output(f"page-{i}-link", "active") for i in range(1, 4)],
+    [Output(f"page-{i}-link", "active") for i in range(1, 5)],
     [Input("url", "pathname")],
 )
 def toggle_active_links(pathname):
     if pathname == "/":
         # Treat page 1 as the homepage / index
         return True, False, False
-    return [pathname == f"/page-{i}" for i in range(1, 4)]
+    return [pathname == f"/page-{i}" for i in range(1, 5)]
 
 
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
@@ -123,6 +126,8 @@ def render_page_content(pathname):
         return multiple_city_analysis.layout
     elif pathname == "/map-analysis":
         return map_analysis.layout
+    elif pathname == "/changepoint-analysis":
+        return changepoint_analysis.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
