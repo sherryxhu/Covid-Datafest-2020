@@ -32,16 +32,18 @@ layout = html.Div([
             dcc.Dropdown(
                 id='city-dropdown',
                 options=[{'label': i, 'value': i} for i in cities],
+                placeholder= "Select a city...",
             ),
             html.Br(),
             html.H3(children='Specie'),
             dcc.Dropdown(
                 id='specie-dropdown',
                 options=[{'label': i, 'value': i} for i in species],
-                multi=True
+                multi=True,
+                placeholder= "Select a specie...",
             ),
         ],
-            style={'width': '48%', 'display': 'inline-block'}),
+                 style={'width': '48%', 'display': 'inline-block'}),
     ]),
 
     html.Br(),
@@ -68,12 +70,14 @@ def set_cities_options(city):
 def update_graph(city, specie):
     data = []
     changepoint_dates = []
+    colors = ['#ff00ff', '#00ff00','#9900ff','#0000ff','#ff6933']
     if city and specie:
+        i = 0
         for s in specie:
             changepoint_dates += list(
                 df_changepoint[(df_changepoint['City'] == city) & (df_changepoint['Specie'] == s)]['Date'].apply(
                     str))
-
+    
             if s != "AQI":
                 dff = df[(df['City'] == city) & (df['Specie'] == s)].sort_values(by="Date")
                 data.append(go.Scatter(
@@ -84,8 +88,11 @@ def update_graph(city, specie):
                     marker={
                         'size': 7,
                         'opacity': 0.5,
-                        'line': {'width': 0.5, 'color': 'white'}
-                    }
+                        'line': {'width': 0.5, 'color': 'blue'}
+                    },
+                    line=dict(
+                        color=colors[i]
+                    )
                 ))
             else:
                 dff = df[(df['City'] == city)].drop_duplicates('Date').sort_values(by="Date")
@@ -98,8 +105,13 @@ def update_graph(city, specie):
                         'size': 7,
                         'opacity': 0.5,
                         'line': {'width': 0.5, 'color': 'white'}
-                    }
+                    },
+                    line=dict(
+                        color=colors[i]
+                    )
                 ))
+            i += 1
+            
 
     def update_title(city, specie):
         if city and specie:
@@ -152,7 +164,9 @@ def update_graph(city, specie):
                     visible=True
                 ),
                 type='date'
-            )
+            ),
+            plot_bgcolor= '#cce6ff',
+            paper_bgcolor = '#cce6ff'
         ),
 
     }

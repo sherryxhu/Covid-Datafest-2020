@@ -30,13 +30,15 @@ layout = html.Div([
             dcc.Dropdown(
                 id='multiple-city-dropdown',
                 options=[{'label': i, 'value': i} for i in cities_options],
-                multi=True
+                multi=True,
+                placeholder= "Select a city...",
             ),
             html.Br(),
             html.H3(children='Specie'),
             dcc.Dropdown(
                 id='multiple-specie-dropdown',
                 options=[{'label': i, 'value': i} for i in species_options],
+                placeholder= "Select a specie...",
             ),
         ],
             style={'width': '48%', 'display': 'inline-block'}),
@@ -71,8 +73,9 @@ def set_cities_options(cities):
      Input('multiple-specie-dropdown', 'value')])
 def update_graph(cities, specie):
     data = []
+    colors = ['#ff00ff', '#00ff00','#9900ff','#0000ff','#ff6933','yellow','#ff0066']
     if cities and specie:
-        for c in cities: # change this to cities
+        for c,color in zip(cities,colors): # change this to cities
             if specie != "AQI":
                 dff = df[(df['City'] == c) & (df['Specie'] == specie)].sort_values(by="Date")
                 data.append(go.Scatter(
@@ -84,7 +87,10 @@ def update_graph(cities, specie):
                         'size': 7,
                         'opacity': 0.5,
                         'line': {'width': 0.5, 'color': 'white'}
-                    }
+                    },
+                    line = dict(
+                        color = color
+                    )
                 ))
             else:
                 dff = df[(df['City'] == c)].drop_duplicates('Date').sort_values(by="Date")
@@ -133,7 +139,9 @@ def update_graph(cities, specie):
                     visible=True
                 ),
                 type='date'
-            )
+            ),
+            plot_bgcolor= '#cce6ff',
+            paper_bgcolor = '#cce6ff'
         ),
 
     }
