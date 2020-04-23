@@ -23,6 +23,7 @@ from dash.dependencies import Input, Output, State
 
 from pages import city_analysis
 from pages import multiple_city_analysis
+from pages import map_analysis
 from app import app
 
 # we use the Row and Col components to construct the sidebar header
@@ -85,7 +86,7 @@ sidebar = html.Div(
                 [
                     dbc.NavLink("City Analysis", href="/city-analysis", id="page-1-link"),
                     dbc.NavLink("Multiple City Analysis", href="/multiple-city-analysis", id="page-2-link"),
-                    dbc.NavLink("Page 3", href="/page-3", id="page-3-link"),
+                    dbc.NavLink("Map Analysis", href="/map-analysis", id="page-3-link"),
                 ],
                 vertical=True,
                 pills=True,
@@ -120,8 +121,8 @@ def render_page_content(pathname):
         return city_analysis.layout
     elif pathname == "/multiple-city-analysis":
         return multiple_city_analysis.layout
-    elif pathname == "/page-3":
-        return html.P("Oh cool, this is page 3!")
+    elif pathname == "/map-analysis":
+        return map_analysis.layout
     # If the user tries to reach a different page, return a 404 message
     return dbc.Jumbotron(
         [
