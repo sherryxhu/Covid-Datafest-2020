@@ -11,8 +11,8 @@ from datetime import datetime
 
 from app import app
 
-# df = pd.read_csv("../data/COVID-19-data-pop-lat-lng-changepoints-updated.csv")
-df = pd.read_csv("../data/map_data.csv")
+# df = pd.read_csv("data/COVID-19-data-pop-lat-lng-changepoints-updated.csv")
+df = pd.read_csv("data/map_data.csv")
 df = df[df['Country'] == "US"]
 df['text'] = df['City'] + '<br>Change Date for ' + df['Specie'] + ':<br>' + df['Date']
 # colors = ["royalblue","crimson","lightseagreen","orange","lightgrey"]

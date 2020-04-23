@@ -11,14 +11,14 @@ import pandas as pd
 from app import app
 
 # data_file = "../waqi-covid19-airqualitydata-2020.csv"
-data_file = "../data/airqualitydata-2019-2020.csv"
+data_file = "data/airqualitydata-2019-2020.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities = sorted(df['City'].unique())
 # species = sorted(list(df['Specie'].unique()) + ['AQI'])
 species = sorted(list(df['Specie'].unique()))
 
-changepoint_file = '../data/changepoints.csv'
+changepoint_file = 'data/changepoints.csv'
 df_changepoint = pd.read_csv(changepoint_file)
 
 layout = html.Div([

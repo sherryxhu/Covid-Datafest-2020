@@ -15,7 +15,7 @@ fig1_y = [71,35]
 fig1 = go.Figure([go.Bar(x=fig1_options,y=fig1_y)])
 fig1.update_layout(title='Change Point Dates Compared to Lockdown Dates')
 
-df = pd.read_csv('../data/table.csv')
+df = pd.read_csv('data/table.csv')
 
 
 fig2_labels = ['no2','co','o3','pm25','pm10','so2']

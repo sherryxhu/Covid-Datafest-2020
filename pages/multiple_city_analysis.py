@@ -11,7 +11,7 @@ import pandas as pd
 
 from app import app
 
-data_file = "../data/airqualitydata-2019-2020.csv"
+data_file = "data/airqualitydata-2019-2020.csv"
 df = pd.read_csv(data_file)
 df['Date'] = df['Date'].astype('datetime64[ns]')
 cities_options = sorted(df['City'].unique())
