@@ -5,7 +5,7 @@ Link: https://covid-air-quality.herokuapp.com/
 Recently in the news there has been a notable incline in articles pertaining to the decrease in air pollutants among other positive environmental consequences, from India, to China, to experts warning us that this may not be true.
 With so many opposing views, we wanted to quantitatively investigate these claims with data and ask “is COVID-19 actually helping the environment?”
 
-Dashboard Run-through: The first page allows you to select a city, and select the pollutant, or pollutants that you want to observe. If a change point exists, it will be indicated by a gray line, as shown. The slider on the bottom allows you to adjust the time that you’re observing and to zoom in on sections you would like to see closer. You can overlay species if you’d like to see that as well. 
+**Dashboard Run-through:** The first page allows you to select a city, and select the pollutant, or pollutants that you want to observe. If a change point exists, it will be indicated by a gray line, as shown. The slider on the bottom allows you to adjust the time that you’re observing and to zoom in on sections you would like to see closer. You can overlay species if you’d like to see that as well. 
 
 If you would like to view multiple cities, you can go to the second page, which allows you to view trends for several cities for a certain pollutant. 
 
